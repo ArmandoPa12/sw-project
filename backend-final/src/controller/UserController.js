@@ -44,12 +44,28 @@ exports.getUser = async(req, res) => {
 
 //---------------
 exports.createUser = async(req, res) => {
-    const { usuario, email, password } = req.body;
+    const { usuario, email, password, rol } = req.body;
     try {
+
+        const emailExistente = await prisma.usuario.findUnique({
+            where: { email }
+        });
+
+        if (emailExistente) {
+            return res.status(409).json({ error: 'El correo ya está en uso' });
+        }
+
+        const usuarioExistente = await prisma.usuario.findUnique({
+            where: { usuario }
+        });
+
+        if (usuarioExistente) {
+            return res.status(409).json({ error: 'El nombre de usuario ya está en uso' });
+        }
         const hash = await bcrypt.hash(password, 10);
 
         const user = await prisma.usuario.create({
-            data: { usuario, email, password: hash },
+            data: { usuario, email, password: hash, esProfesor: rol },
         });
 
         const token = generateToke(user.id);
@@ -60,6 +76,7 @@ exports.createUser = async(req, res) => {
                 id: user.id,
                 usuario: user.usuario,
                 email: user.email,
+                rol: user.esProfesor
             },
             token,
         });
