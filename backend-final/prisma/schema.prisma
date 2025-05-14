@@ -49,15 +49,15 @@ model Nota {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  imagenes   Imagen[]
-  audios     Audio[]
+  imagenes   Imagen[]  
+  audios     Audio[]  
 }
 
 model Imagen {
   id        Int     @id @default(autoincrement())
   ruta      String 
   notaId    Int
-  nota      Nota    @relation(fields: [notaId], references: [id])
+  nota      Nota    @relation(fields: [notaId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
@@ -65,7 +65,7 @@ model Audio {
   id        Int     @id @default(autoincrement())
   ruta      String 
   notaId    Int
-  nota      Nota    @relation(fields: [notaId], references: [id])
+  nota      Nota    @relation(fields: [notaId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
